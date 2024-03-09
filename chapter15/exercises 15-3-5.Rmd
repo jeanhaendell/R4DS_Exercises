@@ -1,0 +1,70 @@
+---
+title: "15.3.5 Exercises"
+author: "Jean Haendell"
+date: "2024-03-09"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(babynames)
+```
+<br>
+
+1. **What baby name has the most vowels? What name has the highest proportion of vowels? (Hint: what is the denominator?)**
+
+The following code calculates and sorts names by the total number of vowels.
+```{r}
+babynames %>% 
+  mutate(vowels = str_count(name, "[aeiou]")) %>% 
+  arrange(desc(vowels))
+```
+
+The following code gives us the names with the highest proportion of vowels. The denominator is the total of letters in each name, as given by `str_length(name)`
+
+```{r}
+babynames %>% 
+  mutate(vowels = str_count(name, "[aeiou]"),
+         prop_vowels= vowels / str_length(name)) %>% 
+  arrange(desc(prop_vowels))
+```
+
+<br>
+
+2. **Replace all forward slashes in "a/b/c/d/e" with backslashes. What happens if you attempt to undo the transformation by replacing all backslashes with forward slashes? (We’ll discuss the problem very soon.)**
+
+In this question, I'm encountering a problem with the first task. I used the following code:
+```{r}
+data <- "a/b/c/d/e"
+(replaced <- str_replace_all(data, "/", "\\"))
+```
+A double backslash is necessary because a single backslash acts as an escape character. However, I'm not obtaining a single backslash; instead, I'm getting just 'abcde'. With four backslashes, I get a wrong answer too:
+```{r}
+data <- "a/b/c/d/e"
+(replaced <- str_replace_all(data, "/", "\\\\"))
+```
+<br>
+
+3. **Implement a simple version of str_to_lower() using str_replace_all().**
+
+The following code will take every uppercase letter and replace it with the corresponding lowercase letter. Since this question requires a general approach, I didn't change the 'string' argument, indicating that this will apply to any string vector.
+```{r, eval = FALSE}
+str_replace_all(string, "[A-Z]", tolower)
+```
+
+<br>
+
+4. **Create a regular expression that will match telephone numbers as commonly written in your country.**
+
+I'm from Brazil, so the following regex accommodates an optional country code (+55), an optional area code, and the separator (which can be a space, a dash, or nothing) between groups of digits. The variable 'phone_numbers' is an example vector of phone numbers. Then, 'matched_phones' stores the numbers that matched, and subsequently, we print it.
+```{r}
+phone_regex <- "\\+?55\\s?\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}"
+
+phone_numbers <- c("+55 (11) 98765-4321", "(11) 98765-4321", "98765-4321", "11 987654321", "+55 11 987654321")
+
+matched_phones <- str_detect(phone_numbers, phone_regex)
+
+phone_numbers[matched_phones]
+
+```
+
+
